@@ -29,8 +29,10 @@ module UTF8Cleaner
     def sanitize_env_keys(env)
       SANITIZE_ENV_KEYS.each do |key|
         next unless value = env[key]
-        cleaned_value = cleaned_uri_string(value)
-        env[key] = cleaned_value if cleaned_value
+        unless env[key].frozen?
+          cleaned_value = cleaned_uri_string(value)
+          env[key] = cleaned_value if cleaned_value
+        end
       end
     end
 

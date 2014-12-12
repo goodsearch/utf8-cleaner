@@ -28,6 +28,15 @@ describe UTF8Cleaner::Middleware do
     it { new_env['REQUEST_URI'].should == '%C3%89%E2%9C%93' }
   end
 
+  describe "does not modify the value if the environment variable is frozen" do
+    let :env do
+      env = { 'PATH_INFO' => 'foo/%FFbar%2e%2fbaz%26%3B' }
+      env['PATH_INFO'].freeze
+      env
+    end
+    it { expect(new_env['PATH_INFO']).to eq('foo/%FFbar%2e%2fbaz%26%3B') }
+  end
+
   describe "when rack.input is wrapped" do
     # rack.input responds only to methods gets, each, rewind, read and close
     # Rack::Lint::InputWrapper is the class which servers wrappers are based on
