@@ -37,6 +37,18 @@ describe UTF8Cleaner::Middleware do
     it { expect(new_env['PATH_INFO']).to eq('foo/%FFbar%2e%2fbaz%26%3B') }
   end
 
+  describe "replaced windows characters" do
+    let(:env) do
+      {
+          'QUERY_STRING' => "foo=\x7fbar%FF\x80",
+          'HTTP_REFERER' => "http://example.com/?terms=\x93test\xff"
+      }
+    end
+    it { expect { new_env }.to_not raise_error }
+    it { new_env['QUERY_STRING'].should == "foo=\u007Fbar?" }
+    it { new_env['HTTP_REFERER'].should == 'http://example.com/?terms=?test?' }
+  end
+
   describe "when rack.input is wrapped" do
     # rack.input responds only to methods gets, each, rewind, read and close
     # Rack::Lint::InputWrapper is the class which servers wrappers are based on

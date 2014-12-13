@@ -50,8 +50,11 @@ module UTF8Cleaner
     end
 
     def cleaned_uri_string(value)
+      value = value.force_encoding('UTF-8').encode("UTF-8", invalid: :replace, replace: "?")
       if value.include?('%')
         URIString.new(value).cleaned
+      else
+        value
       end
     end
   end
